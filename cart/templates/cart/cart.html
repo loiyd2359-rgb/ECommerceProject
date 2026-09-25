@@ -1,0 +1,47 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>My Cart</title>
+    <link rel="stylesheet" href="{% static 'style.css' %}">
+</head>
+<body>
+    <h1>My Shopping Cart</h1>
+    <a href="{% url 'product_list' %}">Back to Products</a>
+
+    {% if cart.items.all %}
+        <table border="1" cellpadding="10">
+            <tr>
+                <th>Product</th>
+                <th>Price</th>
+                <th>Quantity</th>
+                <th>Subtotal</th>
+                <th>Actions</th>
+            </tr>
+            {% for item in cart.items.all %}
+            <tr>
+                <td>{{ item.product.name }}</td>
+                <td>{{ item.product.price }} EGP</td>
+                <td>
+                    <form method="post" action="{% url 'update_quantity' item.id %}" style="display:inline;">
+                        {% csrf_token %}
+                        <button type="submit" name="action" value="decrease">-</button>
+                        {{ item.quantity }}
+                        <button type="submit" name="action" value="increase">+</button>
+                    </form>
+                </td>
+                <td>{{ item.subtotal }} EGP</td>
+                <td>
+                    <a href="{% url 'remove_from_cart' item.id %}">Remove</a>
+                </td>
+            </tr>
+            {% endfor %}
+        </table>
+        <h3>Total: {{ cart.total_price }} EGP</h3>
+    <a href="{% url 'checkout' %}">Proceed to Checkout</a>
+    {% else %}
+        <p>Your cart is empty.</p>
+    {% endif %}
+</body>
+</html>
